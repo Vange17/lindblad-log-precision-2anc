@@ -15,6 +15,11 @@ the upstream MATLAB source and archived means from revision
 data, variance/SEM analysis, regression checks, and
 [reproducible thesis figures](figures/README.md).
 
+Figure 4.4 labels the rotation-related curves as estimated T counts: their
+archived values include a factor of 66 per Rz rotation. The figure documentation
+specifies the synthesis convention and the pre-synthesis CNOT-count scope;
+the numerical values and plot layout are unchanged.
+
 Figure 4.5 keeps the original 5,000,000-trajectory mean estimates and adds SEM
 estimates obtained from 10,000 supplementary trajectories. The new sampler
 corrects a per-step phase initialization; its SEM estimates apply to the

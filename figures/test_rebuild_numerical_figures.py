@@ -1,4 +1,4 @@
-"""Checks for the supplementary SEM overlay; uses the recorded benchmark data."""
+"""Gate-count and supplementary SEM checks using the recorded benchmark data."""
 
 import tempfile
 import unittest
@@ -10,7 +10,7 @@ import numpy as np
 import rebuild_numerical_figures as figures
 
 
-class SupplementarySEMTests(unittest.TestCase):
+class NumericalFigureTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         mat_path = figures.VARIANCE_SUMMARY.parents[2] / (
@@ -21,6 +21,51 @@ class SupplementarySEMTests(unittest.TestCase):
             figures.VARIANCE_SUMMARY, delimiter=",", names=True, dtype=float
         )
         figures.configure_plot_style()
+
+    def test_gate_counts_use_estimated_t_units(self):
+        counts = figures.compute_gate_counts(self.variables)
+        self.assertNotIn("baseline_rz", counts)
+        self.assertNotIn("compensated_rz", counts)
+        np.testing.assert_array_equal(
+            counts["baseline_t"], 66 * 42 * (counts["baseline_cnot"] / 44)
+        )
+        np.testing.assert_array_equal(counts["compensated_t"], np.full(13, 17826336))
+        np.testing.assert_array_equal(
+            counts["compensated_cnot"],
+            [338944, 338944, 423680, 423680, 423680, 423680,
+             508416, 508416, 508416, 508416, 508416, 593152, 593152],
+        )
+        self.assertEqual(counts["baseline_t"][0], 463043196)
+        self.assertEqual(counts["baseline_t"][-1], 463041150890472)
+
+    def test_gate_plot_labels_units_and_preserves_layout(self):
+        counts = figures.compute_gate_counts(self.variables)
+        with tempfile.TemporaryDirectory() as directory:
+            with patch.object(figures.plt, "close"):
+                figures.draw_gate_figure(counts, Path(directory) / "gate.png")
+                figure = figures.plt.gcf()
+            try:
+                axes = figure.axes[0]
+                labels = [text.get_text() for text in axes.get_legend().get_texts()]
+                self.assertEqual(labels, [
+                    r"$T$ (Trotter-like)", "CNOT (Trotter-like)",
+                    r"$T$ (Ours)", "CNOT (Ours)", "Fit",
+                ])
+                for line, key in zip(axes.lines[:4], (
+                    "baseline_t", "baseline_cnot", "compensated_t", "compensated_cnot"
+                )):
+                    np.testing.assert_array_equal(line.get_xdata(), counts["precision"])
+                    np.testing.assert_array_equal(line.get_ydata(), counts[key])
+                np.testing.assert_array_equal(figure.get_size_inches(), [12, 5.85])
+                np.testing.assert_allclose(axes.get_position().bounds, [0.12, 0.22, 0.64, 0.73])
+                self.assertEqual(axes.get_xlim(), (1.25e-2, 7.5e-9))
+                self.assertEqual(axes.get_ylim(), (1e5, 1e15))
+                self.assertEqual(axes.get_ylabel(), "Gate count per sampled circuit")
+                self.assertEqual(axes.yaxis.label.get_fontsize(), 20)
+                self.assertEqual(len(axes.texts), 4)
+                self.assertTrue(all(text.get_position()[0] == 1.025 for text in axes.texts))
+            finally:
+                figures.plt.close(figure)
 
     def load_sem(self):
         return figures.load_supplementary_sem(

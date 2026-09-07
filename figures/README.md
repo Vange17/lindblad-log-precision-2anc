@@ -5,13 +5,39 @@ rebuilding script. The archived upstream data and the supplementary variance
 results are both included in this repository; no download or new sampling is
 needed to rebuild the plots.
 
-- `gate.png`: thesis Figure 4.4, the 20-qubit gate-count comparison, unchanged
-  by the variance update.
+- `gate.png`: thesis Figure 4.4, the 20-qubit comparison of pre-synthesis CNOT
+  counts and estimated T counts. The numerical values are unchanged; the
+  rotation-related curves are now labeled T, not Rz.
 - `noise.png`: thesis Figure 4.5, the five-qubit observable-estimation errors
   with supplementary one-SEM ranges for the compensated protocol.
 - `rebuild_numerical_figures.py`: plotting code for both figures.
-- `test_rebuild_numerical_figures.py`: data alignment, SEM normalization,
-  absolute-error mapping, and preservation-of-points tests.
+- `test_rebuild_numerical_figures.py`: gate-count units and layout, data alignment,
+  SEM normalization, absolute-error mapping, and preservation-of-points tests.
+
+## Figure 4.4 counting convention
+
+The archived MATLAB arrays named `miti_Rz` and `trotter_Rz` already multiply
+the rotation counts by 66. The thesis figure retains these values and reports
+them as estimated T counts, using the convention in
+[Zeng et al., PRX Quantum 6, 010359 (2025), Appendix G, Eq. (G1)](https://journals.aps.org/prxquantum/pdf/10.1103/PRXQuantum.6.010359#page=44):
+the average T cost per Rz rotation is approximated by
+`1.149 * log2(1 / delta) + 9.2`, giving approximately 66 at single-rotation
+synthesis precision `delta = 1e-15`.
+This estimate is based on the repeat-until-success synthesis method of
+[Bocharov, Roetteler, and Svore](https://doi.org/10.1103/PhysRevLett.114.080502),
+not a deterministic per-rotation gate count.
+
+The per-step rotation counts before synthesis are 42 for the baseline and 51
+for the compensated method. CNOT counts and the plotted target simulation
+precision are also evaluated before rotation synthesis. Additional synthesis
+CNOTs, ancillas, measurements, and accumulated synthesis errors are not included;
+the figure is not a complete fault-tolerant resource analysis. The upstream
+MATLAB source, its historical variable names and labels, and the archived MAT
+file are preserved unchanged. Only the maintained plotting code uses the
+corrected T-count names and labels. All plotted values, fits, and layout
+settings are retained.
+
+## Figure 4.5 supplementary statistics
 
 Figure 4.5 retains the original 5,000,000-trajectory means. Its SEM estimates
 come from 10,000 independent supplementary trajectories of the corrected

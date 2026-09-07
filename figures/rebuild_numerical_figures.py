@@ -6,7 +6,11 @@ Pinned source revision: db4e49f9ab20aaf907803dc788f71206efbdfd6a
 
 The MATLAB file stores several symbolic arrays that scipy cannot decode.  The
 gate counts are therefore recomputed from the deterministic formulas in
-Miti_Ising_OQS4_noshots_github.m.  The real-time errors are read directly from
+Miti_Ising_OQS4_noshots_github.m.  Its factor of 66 is retained as an estimated
+T-gate cost per R_Z rotation, following PRX Quantum 6, 010359, Eq. (G1), at
+single-rotation synthesis precision 1e-15. CNOT counts remain pre-synthesis;
+additional synthesis overheads and accumulated synthesis errors are not included.
+The real-time errors are read directly from
 the archived numerical arrays.  Figure 4.5 retains these means and adds SEM
 estimates from independent supplementary trajectories of the corrected sampler;
 matching its estimator distribution to the historical run is not established.
@@ -88,7 +92,7 @@ def load_numeric_variables(mat_path, names):
 
 
 def compute_gate_counts(variables):
-    """Translate the MATLAB gate-count formulas for the 20-qubit benchmark."""
+    """Return pre-synthesis CNOT counts and estimated T counts for 20 qubits."""
 
     a2 = float(variables["A_abs"][1])
     gamma = 1.5
@@ -167,19 +171,21 @@ def compute_gate_counts(variables):
     compensated_cnot_continuous = (
         2 * number_of_spins + 8 + 16 * truncation_orders
     ) * compensated_steps
-    compensated_rz = np.full_like(
+    # 66 is the average T cost per rotation, not a count of R_Z gates.
+    # Zeng et al., https://doi.org/10.1103/PRXQuantum.6.010359, Eq. (G1).
+    compensated_t = np.full_like(
         precision,
         66 * (2 * number_of_spins + 11) * compensated_steps,
     )
     baseline_cnot = (2 * number_of_spins + 4) * baseline_steps
-    baseline_rz = 66 * (2 * number_of_spins + 2) * baseline_steps
+    baseline_t = 66 * (2 * number_of_spins + 2) * baseline_steps
 
     return {
         "eps_log10": eps_log10,
         "precision": precision,
-        "baseline_rz": baseline_rz,
+        "baseline_t": baseline_t,
         "baseline_cnot": baseline_cnot,
-        "compensated_rz": compensated_rz,
+        "compensated_t": compensated_t,
         "compensated_cnot": compensated_cnot,
         "compensated_cnot_continuous": compensated_cnot_continuous,
     }
@@ -221,10 +227,10 @@ def draw_gate_figure(gate_data, output_path):
     marker_options = {"linestyle": "none", "markersize": 10, "markeredgewidth": 1.0}
     axes.loglog(
         precision,
-        gate_data["baseline_rz"],
+        gate_data["baseline_t"],
         marker="D",
         color=BLUE,
-        label=r"$R_z$ (Trotter-like)",
+        label=r"$T$ (Trotter-like)",
         **marker_options,
     )
     axes.loglog(
@@ -237,10 +243,10 @@ def draw_gate_figure(gate_data, output_path):
     )
     axes.loglog(
         precision,
-        gate_data["compensated_rz"],
+        gate_data["compensated_t"],
         marker="D",
         color=ORANGE,
-        label=r"$R_z$ (Ours)",
+        label=r"$T$ (Ours)",
         **marker_options,
     )
     axes.loglog(
@@ -253,9 +259,9 @@ def draw_gate_figure(gate_data, output_path):
     )
 
     fit_specs = (
-        ("baseline_rz", True),
+        ("baseline_t", True),
         ("baseline_cnot", True),
-        ("compensated_rz", True),
+        ("compensated_t", True),
         ("compensated_cnot_continuous", False),
     )
     for index, (key, log_fit) in enumerate(fit_specs):
@@ -311,7 +317,15 @@ def draw_gate_figure(gate_data, output_path):
         facecolor="white",
         bbox_inches="tight",
         pad_inches=0.02,
-        metadata={"Source": f"{SOURCE_URL}/commit/{SOURCE_REVISION}"},
+        metadata={
+            "Source": f"{SOURCE_URL}/commit/{SOURCE_REVISION}",
+            "GateCountConvention": (
+                "Pre-synthesis CNOT counts; estimated T counts use 66 T gates per "
+                "R_Z at synthesis precision 1e-15 (PRX Quantum 6, 010359, Eq. G1). "
+                "Additional synthesis overheads and accumulated synthesis errors "
+                "are not included."
+            ),
+        },
     )
     plt.close(figure)
 
