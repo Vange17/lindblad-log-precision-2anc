@@ -1,0 +1,81 @@
+{
+  "source_url": "https://github.com/xiaogangli1169/lindblad-log-precision-2anc",
+  "source_revision": "db4e49f9ab20aaf907803dc788f71206efbdfd6a",
+  "source_script_sha256": "44dba804e95d86ea9c8262b197240740cba63dc641cbfa7c34dc6e5a0ac31066",
+  "input_batch_sha256": {
+    "batch_a_5000.mat": "86abfff33a52d88fc8c4f2e4ada12ce249a189aba36e462a6e8d7ae0c56e777b",
+    "batch_b_5000.mat": "5c590009d877a69348ba1f30e7abad299bf6a41d6c1c1b47d8d2810fbd61c36e"
+  },
+  "reproduction_script_sha256": "2ed2d4fe4143569be6562121687c9854f87d315202e54c11a18c0db147ccff6f",
+  "analysis_script_sha256": "93a2d557ff0ccc7ad2e7c853e5164c37394c1647e7585ea0d5876c99e45b4881",
+  "source_mat_git_blob_sha1": "29c0648dfe081f414d15f0fc864bb7d13223782c",
+  "statistic": "Unbiased trajectory variance (ddof=1); trajectory SD; SEM at the specified sample count. No confidence intervals.",
+  "supplementary_trajectory_count": 10000,
+  "matlab_version": "23.2.0.2391609 (R2023b) Update 2",
+  "numpy_version": "1.23.5",
+  "scipy_version": "1.13.1",
+  "seeds": [
+    20260908,
+    20260909
+  ],
+  "rng": "MATLAB twister; inverse-CDF categorical sampling",
+  "trajectories_per_batch": 5000,
+  "pooled_trajectories": 10000,
+  "pilot_included": false,
+  "original_trajectory_count_for_se_extrapolation": 5000000,
+  "mu_step": 1.0327790880083256,
+  "calculation_seconds": [
+    55.147122458333335,
+    56.870838291666665
+  ],
+  "initialization_regression_seed": 1989,
+  "reference_trajectory_max_difference": 4.440892098500626e-16,
+  "baseline_max_difference": 1.1102232040546278e-15,
+  "max_absolute_z_to_exact_mean": 1.502303520888351,
+  "max_relative_variance_se_plugin_nonzero_times": 0.07071816624061064,
+  "mean_se_N5000000_min_nonzero_time": 8.765365660387885e-05,
+  "mean_se_N5000000_max": 0.0003597183257509643,
+  "interpretation": "Independent supplementary variance estimate with per-step xlab_prod reset; not the empirical variance of the historical samples. SEM for N=5000000 is extrapolated, not a new N=5000000 run. Exact trace per trajectory; no measurement-shot noise.",
+  "selected_times": [
+    {
+      "time": 0.0,
+      "variance": 0.0,
+      "trajectory_std": 0.0,
+      "variance_se_plugin": 0.0,
+      "mean_se_N5000000": 0.0,
+      "variance_batch_a": 0.0,
+      "variance_batch_b": 0.0,
+      "mean_z_to_exact": 0.0
+    },
+    {
+      "time": 0.5,
+      "variance": 0.3447555989835288,
+      "trajectory_std": 0.5871589214033359,
+      "variance_se_plugin": 0.003979205814615572,
+      "mean_se_N5000000": 0.0002625854523706631,
+      "variance_batch_a": 0.3404522894831719,
+      "variance_batch_b": 0.3491263293266865,
+      "mean_z_to_exact": 1.2066014279626678
+    },
+    {
+      "time": 1.0,
+      "variance": 0.38994856799291516,
+      "trajectory_std": 0.6244586199204196,
+      "variance_se_plugin": 0.010673746710657595,
+      "mean_se_N5000000": 0.00027926638465555255,
+      "variance_batch_a": 0.3988281207486397,
+      "variance_batch_b": 0.38103272918118697,
+      "mean_z_to_exact": -0.8980996216437929
+    },
+    {
+      "time": 1.5,
+      "variance": 0.6469863694053845,
+      "trajectory_std": 0.8043546291315693,
+      "variance_se_plugin": 0.03549067141006932,
+      "mean_se_N5000000": 0.0003597183257509643,
+      "variance_batch_a": 0.7003417918935593,
+      "variance_batch_b": 0.593236234108615,
+      "mean_z_to_exact": 1.018173128226923
+    }
+  ]
+}
